@@ -182,6 +182,93 @@ let drop (xs: 'a list) (n'th: int): 'a list =
     in
     rev (drp [] 0 xs)
 
+(* Problem 16 *)
+let split (xs: 'a list) (i: int): 'a list * 'a list =
+    let rec aux ys xs i =
+        match xs with
+        | x :: rest -> if i > 0 then aux (x :: ys) rest (i-1)
+                       else rev ys, xs
+        | _ -> rev ys, xs
+    in
+    aux [] xs i
+
+
+(* Problem 17 *)
+let slice xs i k =
+    match split xs i with
+    | first, second -> match split second (k-i) with
+            | first, second -> first
+
+(* Problem 18 *)
+let rotate xs n = 
+    match split xs n with
+    | first, second -> second @ first
+
+(* Problem 19 *)
+let remove_at i xs =
+    let rec aux i xs acc =
+        match xs with 
+        | x :: rest -> if i > 0 then aux (i-1) rest (x :: acc)
+                       else rev acc @ rest
+        | _ -> rev acc @ xs
+    in
+    if i < 0 then xs
+    else aux i xs []
+
+
+(* Problem 20 *)
+let rec insert_at elem i xs =
+    match xs with
+    | x :: rest -> if i > 0 then x :: insert_at elem (i-1) rest
+                   else elem :: xs
+    | _ -> [elem]
+
+(* Problem 21 *)
+let range a b =
+    let rec aux acc a b =
+        if a <= b then aux (a :: acc) (a+1) b
+        else acc
+    in
+    if b > a then rev (aux [] a b)
+    else aux [] b a
+
+(* Problem 22 *)
+let pop xs i =
+    let rec aux acc xs i =
+        match xs with
+            | x :: t -> if i > 0 then aux (x :: acc) t (i-1)
+                                 else Some x, (rev acc) @ t
+            | _ -> None, xs
+    in
+    aux [] xs i
+
+let random_select xs n =
+    let random_index xs =
+        Random.int (List.length xs)
+    in
+    let rec aux acc xs n =
+        if n > 0 then match pop xs (random_index xs) with
+            | Some x, rest -> aux (x :: acc) rest (n-1)
+            | _ -> raise Not_found
+        else acc
+    in
+    (* Random.init 0; *)
+    aux [] xs n
+
+(* Problem 23 *)
+let lotto_select n m: int list =
+    random_select (range 1 m) n
+
+(* Problem 24 *)
+let permutation xs =
+    let rec aux acc xs =
+        if List.length xs > 0 then
+            match pop xs (Random.int (List.length xs)) with
+            | Some x, rest -> aux (x :: acc) rest
+            | _ -> acc
+        else acc
+    in
+    aux [] xs
 
 let () =
     print_endline "Hello, world!"

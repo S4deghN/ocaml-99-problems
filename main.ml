@@ -270,5 +270,15 @@ let permutation xs =
     in
     aux [] xs
 
+(* Problem 25 *)
+let extract xs k =
+    let rec aux xs cnt buf =
+        if cnt < k then match xs with
+            | x :: t -> (aux t (cnt+1) (x :: buf)) @ (aux t cnt buf)
+            | _ -> []
+        else [rev buf]
+    in
+    aux xs 0 []
+
 let () =
     print_endline "Hello, world!"
